@@ -1,11 +1,11 @@
 import React, {useRef, useState} from 'react';
 import * as Styles from "./user.styled";
-import {IUser} from "../../list";
 import {Animated, Text} from "react-native";
 import {CaretDown, CaretUp} from "phosphor-react-native";
+import {IRegisteredUsers} from "../../list";
 
 interface IUserProps{
-    userData: IUser
+    userData: IRegisteredUsers
 }
 function User({userData} : IUserProps) {
     const [ isOpen, setIsOpen] = React.useState(false)
@@ -41,13 +41,13 @@ function User({userData} : IUserProps) {
                 </Styles.SubtitleWrapper>
             </Styles.Header>
             <Styles.Body style={{height: elHeight}}>
-                <Styles.UserInfo>{userData.username + ' ' + userData.fullname}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.phoneNumber}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.CEP}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.district}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.street}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.city}</Styles.UserInfo>
-                <Styles.UserInfo>{userData.UF}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.nome + ' ' + userData.sobrenome}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.email}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.endereco.cep}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.endereco.bairro}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.endereco.rua}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.endereco.cidade}</Styles.UserInfo>
+                <Styles.UserInfo>{userData.endereco.uf}</Styles.UserInfo>
             </Styles.Body>
         </Styles.UserWrapper>
     );

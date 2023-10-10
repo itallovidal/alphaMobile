@@ -7,6 +7,8 @@ import {LockKey, User} from "phosphor-react-native";
 import React, {useRef} from "react";
 import {Animated} from "react-native";
 import {loginUser} from "../../utilities/API/login";
+import {useNavigation} from "@react-navigation/native";
+import {GlobalContext} from "../../context/GlobalContextProvider";
 
 const schema = z.object({
     name: z.string({
@@ -22,8 +24,10 @@ interface IFormSchema extends z.infer<typeof schema>{}
 
 
 function Login() {
+    const navigation = useNavigation()
+    const {setUserData} = React.useContext(GlobalContext)
     const theme = useTheme()
-    const {control, handleSubmit, formState: {errors}} = useForm<IFormSchema>({
+    const {control, handleSubmit, formState: {errors}, setError, clearErrors} = useForm<IFormSchema>({
         resolver: zodResolver(schema)
     })
     const nameOpacity: Animated.Value = useRef(new Animated.Value(0.0)).current
@@ -66,12 +70,19 @@ function Login() {
 
 
     function onSubmit(data: IFormSchema){
-        loginUser(data)
+        loginUser(data).then((response)=>{
+            if(response){
+                setUserData(response)
+                navigation.navigate("home")
+            }
+        }).catch((e)=>{
+            clearErrors('name')
+            setError('name', { type: 'manual', message: e.message });
+        })
     }
 
     return (
         <Styles.Wrapper colors={[...theme.COLORS.GRADIENT]}>
-
             <Styles.Header>
                 <Styles.HeaderTitle>Login</Styles.HeaderTitle>
             </Styles.Header>
@@ -105,7 +116,8 @@ function Login() {
                                 secureTextEntry={true}
                                 value={value}
                                 onChangeText={onChange}
-                                placeholderTextColor={'#394867'}    placeholder={'Insira sua senha..'}
+                                placeholderTextColor={'#394867'}
+                                placeholder={'Insira sua senha..'}
                             />
                         }}/>
                 </Styles.FieldWrapper>

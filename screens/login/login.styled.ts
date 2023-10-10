@@ -58,4 +58,6 @@ export const ErrorMessage = styled(Animated.Text)`
   overflow: hidden;
   font-size: 16px;
   width: 100%;
+  background-color: white;
+  padding: 16px;
  `
