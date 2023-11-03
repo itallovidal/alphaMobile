@@ -1,9 +1,9 @@
 import React, {ReactNode} from 'react'
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 interface GlobalContextProps{
     user: IUser
-    setUserData: (data: IUser)=> void
+    setUserData: (data: IUser)=> void,
+    getUserData: ()=> Promise<boolean>
 }
 
 interface IPartido{
@@ -23,15 +23,30 @@ export interface IUser{
     partido: IPartido,
     qrCode_image: string
 }
+
 export const GlobalContext = React.createContext({} as GlobalContextProps)
+
 function GlobalContextProvider({children}: {children: ReactNode}) {
     const [user, setUser] = React.useState<IUser>({} as IUser)
 
-    function setUserData(data: IUser){
+    async function setUserData(data: IUser){
+        await AsyncStorage.setItem('userData', JSON.stringify(data))
         setUser(data)
     }
 
-    return <GlobalContext.Provider value={{setUserData, user}}>
+    async function getUserData(){
+        const data = await AsyncStorage.getItem('userData')
+
+        if(data){
+            const userData =  JSON.parse(data)
+            setUser(userData)
+            return true
+        }
+
+        return false
+    }
+
+    return <GlobalContext.Provider value={{setUserData, user, getUserData}}>
         {children}
     </GlobalContext.Provider>
 }
