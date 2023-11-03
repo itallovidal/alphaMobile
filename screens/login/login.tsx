@@ -1,5 +1,5 @@
 import React from "react";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 
 import {useForm, Controller} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -11,6 +11,10 @@ import {ActivityIndicator, Animated} from "react-native";
 
 import {GlobalContext} from "../../context/GlobalContextProvider";
 import {Center, Text, HStack, Icon, Input, Button, Box} from "native-base";
+import {AnimatedBox, AnimatedButton, AnimatedCenter, AnimatedHStack, AnimatedText} from "../../style/Reanimated";
+import {FadeIn} from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loading from "../../components/loading/loading";
 
 
 
@@ -21,8 +25,7 @@ function Login() {
     })
     const {setUserData, getUserData} = React.useContext(GlobalContext)
     const navigation = useNavigation()
-    const opacityValue: Animated.Value = React.useRef(new Animated.Value(0.0)).current
-    const [loading, setLoading] = React.useState(false)
+    const [loading, setLoading] = React.useState<boolean>(false)
 
     React.useEffect(()=>{
         getUserData().then((data)=>{
@@ -32,45 +35,24 @@ function Login() {
         })
     }, [])
 
-    function handleAnimation(ref: Animated.Value, setting : "show" | "hide"){
-        if(setting === "show"){
-            Animated.timing(ref, {
-                toValue: 1,
-                duration: 200,
-                useNativeDriver: false
-            }).start()
-        }
 
-        if(setting === "hide"){
-            Animated.timing(ref, {
-                toValue: 0.0,
-                duration: 500,
-                useNativeDriver: false
-            }).start()
-        }
-    }
 
-    React.useEffect(()=>{
-        if(errors.email || errors.loginError || errors.password){
-            handleAnimation(opacityValue, "show")
-        }
-        else{
-            handleAnimation(opacityValue, "hide")
-        }
-    }, [errors.email, errors.password, errors.loginError])
+
 
     function onSubmit(data: IFormSchema){
         setLoading(true)
+
         loginUser(data).then((response)=>{
-            setLoading(false)
+
             if(response){
                 setUserData(response)
                 navigation.navigate("home")
             }
         }).catch((e)=>{
-            setLoading(false)
             clearErrors('loginError')
             setError('loginError', { type: 'manual', message: e.message });
+        }).finally(()=>{
+            setLoading(false)
         })
     }
 
@@ -91,7 +73,8 @@ function Login() {
     }
 
     return (
-        <Center p={5}
+        <Center
+                p={5}
                 flex={1}
                 bg={{
                     linearGradient: {
@@ -100,12 +83,16 @@ function Login() {
                     }
                 }}
             >
-            <Text fontSize={32}
-                  fontWeight={"bold"}
-                  mb={5}
-                  color={"white"}
-            >Login</Text>
-            <HStack p={3}
+            <AnimatedText
+                entering={FadeIn}
+                fontSize={32}
+                fontWeight={"bold"}
+                mb={5}
+                color={"white"}
+            >Login</AnimatedText>
+
+            <AnimatedHStack p={3}
+                    entering={FadeIn.delay(200)}
                     w={"full"}
                     alignItems={"center"}
                     bg={"blueGray.600"}
@@ -129,9 +116,10 @@ function Login() {
                                                   backgroundColor: "transparent"
                                               }}/>
                             }}/>
-            </HStack>
+            </AnimatedHStack>
 
-            <HStack p={3}
+            <AnimatedHStack p={3}
+                    entering={FadeIn.delay(200)}
                     w={"full"}
                     alignItems={"center"}
                     bg={"blueGray.600"}
@@ -155,29 +143,36 @@ function Login() {
                                               }}
                                 />
                             }}/>
-            </HStack>
-            <Button mt={5}
-                    w={"full"}
-                    p={5}
-                    bg={"blueGray.500"}
-                    onPress={handleSubmit(onSubmit)}
-                    _pressed={{
-                        backgroundColor: "blueGray.600"
-                    }}
+            </AnimatedHStack>
+
+            <AnimatedButton
+                entering={FadeIn.delay(300)}
+                mt={5}
+                w={"full"}
+                p={5}
+                bg={"blueGray.500"}
+                onPress={handleSubmit(onSubmit)}
+                _pressed={{
+                    backgroundColor: "blueGray.600"
+                }}
             >
                 <Text fontSize={18} color={"white"}>Entrar</Text>
-            </Button>
+            </AnimatedButton>
 
             {
                 errorMessage
-                ?  <Box mt={5}>
+                ?  <AnimatedBox mt={5}
+                                entering={FadeIn}
+                    >
                     <Text color={"white"}
                           fontSize={18}>{errorMessage}</Text>
-                </Box>
+                </AnimatedBox>
                 : null
             }
 
-            {loading ? <ActivityIndicator style={{marginTop: 24}} size={'large'} color={'#ffffff'}/> : null}
+            {/*{loading === "delayed" && <Text my={5} color={"white"}> Demorando mais que o esperado, um momento..</Text>}*/}
+
+            {loading ? <Loading/> : null}
         </Center>
     );
 }

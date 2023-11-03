@@ -8,7 +8,9 @@ import User from "./components/user";
 import {GlobalContext, IUser} from "../../context/GlobalContextProvider";
 import {getAllRegisteredUsers} from "../../utilities/API/getAllRegisteredUsers";
 
-import {VStack, FlatList, Box, Button, Text, HStack} from "native-base";
+import {VStack, Button, Text, HStack} from "native-base";
+import Animated, {Layout, useAnimatedRef} from "react-native-reanimated";
+import {FlatList} from "react-native";
 
 interface IAddress{
     bairro: string,
@@ -34,7 +36,8 @@ function List() {
     const [users, setUsers] = React.useState<IRegisteredUsers[]>([])
     const {user} = React.useContext(GlobalContext)
     const [page, setPage] = React.useState(0)
-    // const flatlistRef = React.useRef<FlatList>(null)
+    const flatlistRef = React.useRef<Animated.FlatList<IRegisteredUsers>>(null)
+
 
     useFocusEffect(
         React.useCallback(() => {
@@ -51,13 +54,13 @@ function List() {
         }, [page])
     );
 
-    // function onAdd(elIndex: number){
-    //     if(elIndex > 0){
-    //         if(flatlistRef.current){
-    //             flatlistRef.current.scrollToIndex({animated: true, index: elIndex - 1})
-    //         }
-    //     }
-    // }
+    function onAdd(elIndex: number){
+        if(elIndex > 0){
+            if(flatlistRef.current){
+                flatlistRef.current.scrollToIndex({animated: true, index: elIndex - 1})
+            }
+        }
+    }
 
     return (
         <VStack bg={"blueGray.700"}
@@ -65,14 +68,20 @@ function List() {
 
             <Dropdown/>
 
-            <FlatList data={users}
-                      flex={1}
-                      p={5}
-                      ListEmptyComponent={<EmptyList/>}
-                      // onContentSizeChange={()=> onAdd(users.length) }
-                      renderItem={({item} : {item: IRegisteredUsers})=>{
-                          return <User key={item.id} userData={item}/>
-                      }}/>
+            <Animated.FlatList
+                ref={flatlistRef}
+                style={{
+                    flex: 1,
+                    padding: 10
+                }}
+                data={users}
+                ListEmptyComponent={<EmptyList/>}
+                itemLayoutAnimation={Layout.springify()}
+                contentContainerStyle={{flexGrow: 1}}
+                onContentSizeChange={()=> onAdd(users.length)}
+                renderItem={({item, index} : {item: IRegisteredUsers, index: number})=>{
+                    return <User index={index} key={item.id} userData={item}/>
+                }}/>
 
             <HStack h={20}
                     w={"full"}
