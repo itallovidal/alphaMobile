@@ -9,14 +9,13 @@ import {GlobalContext, IUser} from "../../context/GlobalContextProvider";
 import {getAllRegisteredUsers} from "../../utilities/API/getAllRegisteredUsers";
 
 import {VStack, Button, Text, HStack} from "native-base";
-import Animated, {Layout, useAnimatedRef} from "react-native-reanimated";
-import {FlatList} from "react-native";
+import Animated, {Layout} from "react-native-reanimated";
 
 interface IAddress{
-    bairro: string,
-    cep: string,
+    bairro: string | null,
+    cep: string | null,
     cidade: string,
-    rua: string,
+    rua: string | null,
     uf: string
 }
 
@@ -32,6 +31,7 @@ export interface IRegisteredUsers{
 }
 
 function List() {
+    const [isLoading, setIsLoading] = React.useState(false)
     const navigation = useNavigation()
     const [users, setUsers] = React.useState<IRegisteredUsers[]>([])
     const {user} = React.useContext(GlobalContext)
@@ -41,6 +41,7 @@ function List() {
 
     useFocusEffect(
         React.useCallback(() => {
+            setIsLoading(true)
             getAllRegisteredUsers(user.collection_id, page ).then((data)=>{
                 setUsers((prev) => {
                     if(prev.length > 0){
@@ -50,6 +51,8 @@ function List() {
                     return data
                 })
 
+            }).finally(()=>{
+                setIsLoading(false)
             })
         }, [page])
     );
@@ -65,7 +68,6 @@ function List() {
     return (
         <VStack bg={"blueGray.700"}
                 flex={1}>
-
             <Dropdown/>
 
             <Animated.FlatList
@@ -108,6 +110,7 @@ function List() {
                 </Button>
 
                 <Button bg={"transparent"}
+                        isLoading={isLoading}
                         w={"45%"}
                         _pressed={{
                             backgroundColor: "transparent",

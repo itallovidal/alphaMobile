@@ -1,5 +1,4 @@
 import React from "react";
-import {useFocusEffect, useNavigation} from "@react-navigation/native";
 
 import {useForm, Controller} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -7,14 +6,11 @@ import {IFormSchema, loginSchema} from "./schema";
 import {loginUser} from "../../utilities/API/login";
 
 import {LockKey, User} from "phosphor-react-native";
-import {ActivityIndicator, Animated} from "react-native";
 
 import {GlobalContext} from "../../context/GlobalContextProvider";
-import {Center, Text, HStack, Icon, Input, Button, Box} from "native-base";
-import {AnimatedBox, AnimatedButton, AnimatedCenter, AnimatedHStack, AnimatedText} from "../../style/Reanimated";
+import {Center, Text, Icon, Input,} from "native-base";
+import {AnimatedBox, AnimatedButton, AnimatedHStack, AnimatedText} from "../../style/Reanimated";
 import {FadeIn} from "react-native-reanimated";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Loading from "../../components/loading/loading";
 
 
 
@@ -24,29 +20,36 @@ function Login() {
         resolver: zodResolver(loginSchema)
     })
     const {setUserData, getUserData} = React.useContext(GlobalContext)
-    const navigation = useNavigation()
     const [loading, setLoading] = React.useState<boolean>(false)
+    const [isDelaying, setIsDelaying] = React.useState<boolean>(false)
+
+    if(!loading && isDelaying){
+        setIsDelaying(false)
+    }
+
+    console.log("renderizou")
 
     React.useEffect(()=>{
-        getUserData().then((data)=>{
-            if(data){
-                navigation.navigate("home")
-            }
-        })
+        setLoading(true)
+        try{
+            getUserData()
+        }catch(e){
+            throw e
+        }finally{
+            setLoading(false)
+            setIsDelaying(false)
+        }
     }, [])
-
-
-
-
 
     function onSubmit(data: IFormSchema){
         setLoading(true)
+        setTimeout(()=>{
+            setIsDelaying(true)
+        }, 5000)
 
         loginUser(data).then((response)=>{
-
             if(response){
                 setUserData(response)
-                navigation.navigate("home")
             }
         }).catch((e)=>{
             clearErrors('loginError')
@@ -55,6 +58,8 @@ function Login() {
             setLoading(false)
         })
     }
+
+
 
     if(errors.email){
         errorMessage = errors.email.message
@@ -146,33 +151,45 @@ function Login() {
             </AnimatedHStack>
 
             <AnimatedButton
+                isLoading={loading}
                 entering={FadeIn.delay(300)}
                 mt={5}
                 w={"full"}
                 p={5}
-                bg={"blueGray.500"}
+                bg={"white"}
                 onPress={handleSubmit(onSubmit)}
                 _pressed={{
                     backgroundColor: "blueGray.600"
                 }}
             >
-                <Text fontSize={18} color={"white"}>Entrar</Text>
+                <Text fontSize={18} color={"black"}>Entrar</Text>
             </AnimatedButton>
 
             {
-                errorMessage
-                ?  <AnimatedBox mt={5}
-                                entering={FadeIn}
-                    >
-                    <Text color={"white"}
-                          fontSize={18}>{errorMessage}</Text>
-                </AnimatedBox>
-                : null
+                errorMessage && (
+                    <AnimatedBox mt={5}
+                                 entering={FadeIn}>
+                        <Text color={"white"}
+                              fontSize={18}>{errorMessage}</Text>
+                    </AnimatedBox>
+                )
             }
 
+            {
+                isDelaying && <AnimatedBox mt={5}
+                                           entering={FadeIn}>
+                    <Text color={"white"}
+                          mb={-5}
+                          fontSize={18}
+                          textAlign={"center"}
+                        >Demorando mais que o esperado.</Text>                    <Text color={"white"}
+                          fontSize={18}
+                          textAlign={"center"}
+                        >Por favor, aguarde mais um pouco..</Text>
+                </AnimatedBox>
+            }
             {/*{loading === "delayed" && <Text my={5} color={"white"}> Demorando mais que o esperado, um momento..</Text>}*/}
 
-            {loading ? <Loading/> : null}
         </Center>
     );
 }

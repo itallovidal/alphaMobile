@@ -41,9 +41,9 @@ function User({userData, index} : IUserProps) {
                 >
                     <Text fontSize={16}>{userData.nome + ' ' + userData.sobrenome}</Text>
                     <Text fontSize={16}>{userData.email}</Text>
-                    <Text fontSize={16}>{userData.endereco.cep}</Text>
-                    <Text fontSize={16}>{userData.endereco.bairro}</Text>
-                    <Text fontSize={16}>{userData.endereco.rua}</Text>
+                    {userData.endereco.cep && <Text fontSize={16}>{userData.endereco.cep}</Text> }
+                    {userData.endereco.bairro && <Text fontSize={16}>{userData.endereco.bairro}</Text>}
+                    {userData.endereco.rua && <Text fontSize={16}>{userData.endereco.rua}</Text>}
                     <Text fontSize={16}>{userData.endereco.cidade}</Text>
                     <Text fontSize={16}>{userData.endereco.uf}</Text>
                 </AnimatedVStack>

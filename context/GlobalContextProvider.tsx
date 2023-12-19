@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 interface GlobalContextProps{
     user: IUser
     setUserData: (data: IUser)=> void,
-    getUserData: ()=> Promise<boolean>
+    getUserData: ()=> Promise<boolean>,
+    logOut: ()=> Promise<void>
 }
 
 interface IPartido{
@@ -34,6 +35,11 @@ function GlobalContextProvider({children}: {children: ReactNode}) {
         setUser(data)
     }
 
+    async function logOut(){
+        await AsyncStorage.clear()
+        setUser({} as IUser)
+    }
+
     async function getUserData(){
         const data = await AsyncStorage.getItem('userData')
 
@@ -46,7 +52,7 @@ function GlobalContextProvider({children}: {children: ReactNode}) {
         return false
     }
 
-    return <GlobalContext.Provider value={{setUserData, user, getUserData}}>
+    return <GlobalContext.Provider value={{setUserData, user, getUserData, logOut}}>
         {children}
     </GlobalContext.Provider>
 }
