@@ -10,4 +10,33 @@ export const loginSchema = z.object({
     loginError: z.any().optional()
 })
 
-export interface IFormSchema extends z.infer<typeof loginSchema>{}
+export interface ILoginSchema extends z.infer<typeof loginSchema>{}
+
+
+export const editUserSchema = z.object({
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    youtube: z.string().optional(),
+    linkedin: z.string().optional(),
+    siteInstitucional: z.string().optional(),
+    senha: z.string({
+        required_error: "Por favor, preencha a senha. "
+    }).min(6),
+    senhaConfirma: z.string({
+        required_error: "Por favor, preencha a confirmação."
+    }).min(6),
+    telefone: z.string({
+        required_error: "Por favor, preencha o telefone. "
+    }).min(4),
+    nome: z.string({
+        required_error: "Por favor, preencha o nome. "
+    }).min(4),
+    partido_nome: z.string({
+        required_error: "Por favor, preencha o nome do partido."
+    }).min(4),
+    partido_sigla: z.string({
+        required_error: "Por favor, preenchao a sigla do partido."
+    }).min(4),
+})
+
+export interface IEditUserSchema extends z.infer<typeof editUserSchema>{}

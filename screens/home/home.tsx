@@ -4,17 +4,18 @@ import React from 'react'
 import {GlobalContext} from "../../context/GlobalContextProvider";
 import {getUserCount} from "../../utilities/API/getUserCount";
 
-import {VStack, Image, Box, Text, HStack, Pressable, Heading, Icon} from "native-base";
+import {VStack, Image, Box, Text, HStack, Pressable, Heading, Icon, Button} from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserPhoto from "../../components/userPhoto";
 import {TouchableOpacity} from "react-native";
 import {SignOut} from "phosphor-react-native";
 
 import placeholderProfile from '../../assets/userPhotoDefault.png'
+import {TAppRouteNavigator} from "../../routes/appRoutes";
 
 
 function Home() {
-    const navigation = useNavigation()
+    const navigation = useNavigation<TAppRouteNavigator>()
     const {user, logOut} = React.useContext(GlobalContext)
     const [count, setCount] = React.useState(0)
 
@@ -45,13 +46,19 @@ function Home() {
                 <UserPhoto size={16}
                            source={ {uri: user.profile_image} }
                            alt={""}
-                           marginRight={5}
                 />
 
-                <VStack flex={1}>
-                    <Text color={"gray.100"} fontSize={"md"}>Olá,</Text>
-                    <Heading fontSize={"md"} color={"gray.100"}>{user.nome}</Heading>
-                </VStack>
+                <Button variant={"unstyled"}
+                        onPress={()=> navigation.navigate('profile')}
+                        _pressed={{
+                    opacity: .6
+                }} justifyContent={"flex-start"} flex={1}>
+                    <HStack ml={1} mb={-1} >
+                        <Text color={"gray.100"} fontSize={"24"}>Olá, </Text>
+                        <Text color={"gray.100"} fontSize={"24"} fontWeight={"bold"}>{user.nome.split(" ")[0]}</Text>
+                    </HStack>
+                   <Text color={"gray.100"} opacity={.5} fontSize={"16"} > Toque para ir ao perfil</Text>
+                </Button>
 
                 <TouchableOpacity onPress={logOut}>
                     <SignOut size={32} color={"white"}/>

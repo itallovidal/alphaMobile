@@ -2,7 +2,7 @@ import React from "react";
 
 import {useForm, Controller} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {IFormSchema, loginSchema} from "./schema";
+import {ILoginSchema, loginSchema} from "./schema";
 import {loginUser} from "../../utilities/API/login";
 
 import {LockKey, User} from "phosphor-react-native";
@@ -16,7 +16,7 @@ import {FadeIn} from "react-native-reanimated";
 
 function Login() {
     let errorMessage = undefined
-    const {control, handleSubmit, formState: {errors}, setError, clearErrors} = useForm<IFormSchema>({
+    const {control, handleSubmit, formState: {errors}, setError, clearErrors} = useForm<ILoginSchema>({
         resolver: zodResolver(loginSchema)
     })
     const {setUserData, getUserData} = React.useContext(GlobalContext)
@@ -41,7 +41,7 @@ function Login() {
         }
     }, [])
 
-    function onSubmit(data: IFormSchema){
+    function onSubmit(data: ILoginSchema){
         setLoading(true)
         setTimeout(()=>{
             setIsDelaying(true)

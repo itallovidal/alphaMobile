@@ -22,7 +22,11 @@ export interface IUser{
     facebook: string,
     instagram: string
     partido: IPartido,
-    qrCode_image: string
+    qrCode_image: string,
+    linkedin: string,
+    senha: string,
+    youtube: string,
+    telefone: string
 }
 
 export const GlobalContext = React.createContext({} as GlobalContextProps)
