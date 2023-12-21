@@ -7,9 +7,10 @@ export const AnimatedLoading = Animated.createAnimatedComponent(ActivityIndicato
 function Loading() {
     return (
         <AnimatedLoading
-            style={{marginTop: 24}}
-            size={'large'}
+            style={{marginTop: 24, flex: 1}}
+            size={56}
             color={'#ffffff'}
+
             entering={FadeIn.duration(1000)}
         />
     );

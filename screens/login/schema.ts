@@ -37,6 +37,11 @@ export const editUserSchema = z.object({
     partido_sigla: z.string({
         required_error: "Por favor, preenchao a sigla do partido."
     }).min(4),
+}).refine(({senha, senhaConfirma})=>{
+    return senha === senhaConfirma
+}, {
+    path: ["senhaConfirma"],
+    message: "As senhas não batem."
 })
 
 export interface IEditUserSchema extends z.infer<typeof editUserSchema>{}

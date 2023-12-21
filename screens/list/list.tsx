@@ -10,6 +10,7 @@ import {getAllRegisteredUsers} from "../../utilities/API/getAllRegisteredUsers";
 
 import {VStack, Button, Text, HStack} from "native-base";
 import Animated, {Layout} from "react-native-reanimated";
+import Loading from "../../components/loading/loading";
 
 interface IAddress{
     bairro: string | null,
@@ -70,20 +71,29 @@ function List() {
                 flex={1}>
             <Dropdown/>
 
-            <Animated.FlatList
-                ref={flatlistRef}
-                style={{
-                    flex: 1,
-                    padding: 10
-                }}
-                data={users}
-                ListEmptyComponent={<EmptyList/>}
-                itemLayoutAnimation={Layout.springify()}
-                contentContainerStyle={{flexGrow: 1}}
-                onContentSizeChange={()=> onAdd(users.length)}
-                renderItem={({item, index} : {item: IRegisteredUsers, index: number})=>{
-                    return <User index={index} key={item.id} userData={item}/>
-                }}/>
+            {
+                isLoading ? (
+                    <Loading/>
+                )
+                :
+                (
+                    <Animated.FlatList
+                        ref={flatlistRef}
+                        style={{
+                            flex: 1,
+                            padding: 10
+                        }}
+                        data={users}
+                        ListEmptyComponent={<EmptyList/>}
+                        itemLayoutAnimation={Layout.springify()}
+                        contentContainerStyle={{flexGrow: 1}}
+                        onContentSizeChange={()=> onAdd(users.length)}
+                        renderItem={({item, index} : {item: IRegisteredUsers, index: number})=>{
+                            return <User index={index} key={item.id} userData={item}/>
+                        }}/>
+                )
+            }
+
 
             <HStack h={20}
                     w={"full"}

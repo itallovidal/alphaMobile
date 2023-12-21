@@ -54,9 +54,8 @@ function Profile() {
             senha: user.senha,
             senhaConfirma: user.senha,
             nome: user.nome,
-            partido_nome: user.partido.nome,
-            partido_sigla: user.partido.sigla,
-
+            partido_nome: "indisponível",
+            partido_sigla: "indisponível",
         }
     })
 
